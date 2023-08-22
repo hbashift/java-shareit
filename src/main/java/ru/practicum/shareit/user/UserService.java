@@ -1,16 +1,35 @@
 package ru.practicum.shareit.user;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-public interface UserService {
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    @Autowired
+    private final UserDao userDao;
 
-    UserDto createUser(UserDto dto);
+    public User addUser(User user) {
+        return userDao.addUser(user);
+    }
 
-    UserDto updateUser(long userId, UserDto dto);
+    public User getUser(Long userId) {
+        return userDao.getUser(userId);
+    }
 
-    UserDto findUserById(long userId);
+    public User updateUser(User user, Long userId) {
+        return userDao.updateUser(user, userId);
+    }
 
-    void deleteUserById(long userId);
 
-    List<UserDto> findAllUsers();
+    public void deleteUser(Long userId) {
+        userDao.deleteUser(userId);
+    }
+
+    public List<User> getUsers() {
+        return userDao.getUsers();
+    }
 }

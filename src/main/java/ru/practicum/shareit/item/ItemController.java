@@ -1,80 +1,45 @@
 package ru.practicum.shareit.item;
 
-import lombok.AllArgsConstructor;
-import org.springframework.validation.annotation.Validated;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.CreateCommentDto;
-import ru.practicum.shareit.item.dto.DetailedCommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.validation_markers.Create;
-import ru.practicum.shareit.validation_markers.Update;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
-@RequestMapping(path = "/items")
+@RequestMapping("/items")
+@RequiredArgsConstructor
 public class ItemController {
-
-    public static final int MIN_ID_VALUE = 1;
-    public static final String USER_ID_HEADER = "X-Sharer-User-Id";
-    public static final String NULL_ITEM_ID_MESSAGE = "itemID is null";
-    public static final String NULL_USER_ID_MESSAGE = "userID is null";
-
+    @Autowired
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto createItem(@Validated({Create.class})
-                              @RequestBody ItemDto itemDto,
-                              @NotNull(message = (NULL_ITEM_ID_MESSAGE))
-                              @Min(MIN_ID_VALUE)
-                              @RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.createItem(itemDto, userId);
-    }
-
-    @PostMapping("/{itemId}/comment")
-    public DetailedCommentDto createComment(@Validated({Update.class}) @RequestBody CreateCommentDto commentDto,
-                                            @NotNull(message = (NULL_ITEM_ID_MESSAGE))
-                                 @Min(MIN_ID_VALUE)
-                                 @PathVariable Long itemId,
-                                            @NotNull(message = (NULL_USER_ID_MESSAGE))
-                                 @Min(MIN_ID_VALUE)
-                                 @RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.createComment(commentDto, itemId, userId);
+    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Long id,
+                           @Valid @RequestBody ItemDto itemDto) {
+        return itemService.addItem(id, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@Validated({Update.class})
-                              @RequestBody ItemDto itemDto,
-                              @NotNull(message = NULL_ITEM_ID_MESSAGE)
-                              @Min(MIN_ID_VALUE)
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long id,
                               @PathVariable Long itemId,
-                              @NotNull(message = NULL_USER_ID_MESSAGE)
-                              @Min(MIN_ID_VALUE)
-                              @RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.updateItem(itemDto, itemId, userId);
+                              @RequestBody ItemDto itemDto) {
+        return itemService.updateItem(id, itemDto, itemId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findItemById(@NotNull(message = NULL_ITEM_ID_MESSAGE)
-                                @Min(MIN_ID_VALUE)
-                                @PathVariable Long itemId,
-                                @RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.findItemById(itemId, userId);
+    public ItemDto getItem(@PathVariable Long itemId) {
+        return itemService.getItem(itemId);
     }
 
     @GetMapping
-    public List<ItemDto> findAllItems(@NotNull(message = NULL_USER_ID_MESSAGE)
-                                      @Min(MIN_ID_VALUE)
-                                      @RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.findAllItems(userId);
+    public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Long id) {
+        return itemService.getItems(id);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> findItemsByRequest(@RequestParam String text,
-                                            @RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.findItemsByRequest(text, userId);
+    public List<ItemDto> searchItems(@RequestParam String text) {
+        return itemService.searchItems(text);
     }
 }

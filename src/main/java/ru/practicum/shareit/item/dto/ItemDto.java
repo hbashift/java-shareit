@@ -1,29 +1,23 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import ru.practicum.shareit.booking.dto.BookingInItemDto;
-import ru.practicum.shareit.validation_markers.Create;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@Accessors(chain = true)
 public class ItemDto {
+
     private Long id;
-    @NotBlank(groups = Create.class)
+
+    @NotBlank
     private String name;
-    @NotBlank(groups = Create.class)
+
+    @NotBlank
     private String description;
-    @NotNull(groups = Create.class)
+
+    @NotNull
     private Boolean available;
-    private BookingInItemDto lastBooking;
-    private BookingInItemDto nextBooking;
-    private List<DetailedCommentDto> comments;
 }

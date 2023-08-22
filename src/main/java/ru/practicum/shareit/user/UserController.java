@@ -1,55 +1,39 @@
 package ru.practicum.shareit.user;
 
-import lombok.AllArgsConstructor;
-import org.springframework.validation.annotation.Validated;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.validation_markers.Create;
-import ru.practicum.shareit.validation_markers.Update;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(path = "/users")
 public class UserController {
-
-    public static final int MIN_ID_VALUE = 1;
-    public static final String NULL_USER_ID_MESSAGE = "userID is null";
-
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@Validated({Create.class}) @RequestBody UserDto userDto) {
-        return userService.createUser(userDto);
+    public User addUser(@Valid @RequestBody User user) {
+        return userService.addUser(user);
     }
 
-    @GetMapping("/{userId}")
-    public UserDto findUserById(@NotNull(message = (NULL_USER_ID_MESSAGE))
-                                @Min(MIN_ID_VALUE)
-                                @PathVariable Long userId) {
-        return userService.findUserById(userId);
-    }
-
-    @GetMapping
-    public List<UserDto> findAllUsers() {
-        return userService.findAllUsers();
+    @GetMapping ("/{userId}")
+    public User getUser(@PathVariable Long userId) {
+        return userService.getUser(userId);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@NotNull(message = NULL_USER_ID_MESSAGE)
-                              @Min(MIN_ID_VALUE)
-                              @PathVariable Long userId,
-                              @Validated({Update.class})
-                              @RequestBody UserDto userDto) {
-        return userService.updateUser(userId, userDto);
+    public User updateUser(@RequestBody User user, @PathVariable Long userId) {
+        return userService.updateUser(user, userId);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUserById(@NotNull(message = (NULL_USER_ID_MESSAGE))
-                               @Min(MIN_ID_VALUE)
-                               @PathVariable Long userId) {
-        userService.deleteUserById(userId);
+    public void deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+    }
+
+    @GetMapping
+    public List<User> getUsers() {
+        return userService.getUsers();
     }
 }
