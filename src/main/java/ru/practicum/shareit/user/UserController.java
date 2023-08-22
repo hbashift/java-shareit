@@ -1,39 +1,56 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.service.api.UserService;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Collection;
 
+@Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(path = "/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User addUser(@Valid @RequestBody User user) {
-        return userService.addUser(user);
+    public ResponseEntity<UserDto> addUser(@Valid @RequestBody UserDto userDto) {
+        log.info("UserController: receive POST request for add new user with body={}", userDto);
+        UserDto savedUser =  userService.addUser(userDto);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
-    @GetMapping ("/{userId}")
-    public User getUser(@PathVariable Long userId) {
-        return userService.getUser(userId);
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable(value = "id") long id) {
+        log.info("receive GET request for return user by id={}", id);
+        UserDto returnedUserDto = userService.getUserById(id);
+        return new ResponseEntity<>(returnedUserDto, HttpStatus.OK);
     }
 
-    @PatchMapping("/{userId}")
-    public User updateUser(@RequestBody User user, @PathVariable Long userId) {
-        return userService.updateUser(user, userId);
-    }
-
-    @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,
+                                              @PathVariable(value = "id") long userId) {
+        log.info("receive PATCH request for update user with id={}, requestBody={}", userId, userDto);
+        UserDto updatedUserDto = userService.updateUser(userId, userDto);
+        return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public ResponseEntity<Collection<UserDto>> getAllUsers() {
+        log.info("receive GET request for return all users");
+        Collection<UserDto> usersDto = userService.getAllUsers();
+        return new ResponseEntity<>(usersDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteUserById(@PathVariable("id") Long id) {
+        log.info("receive DELETE request fo delete user with id= {}", id);
+        userService.deleteUserById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
