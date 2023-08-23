@@ -18,14 +18,13 @@ import java.util.Optional;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private final ItemDtoMapper itemDtoMapper;
 
     @PostMapping
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
                        @Valid @RequestBody ItemDto itemDto) {
         log.info("Controller layer: request for item creation obtained.");
 
-        return itemDtoMapper.convertItemToItemDto(itemService.saveItem(userId, itemDtoMapper.itemDtoToItem(itemDto)));
+        return itemService.saveItem(userId, ItemDtoMapper.itemDtoToItem(itemDto));
     }
 
     @PatchMapping("/{itemId}")
@@ -34,28 +33,27 @@ public class ItemController {
                               @RequestBody ItemDto itemDto) {
         log.info("Controller layer: request for item with id: '{}' update obtained.", itemId);
 
-        return itemDtoMapper.convertItemToItemDto(itemService.updateItem(userId, itemId,
-                itemDtoMapper.itemDtoToItem(itemDto)));
+        return itemService.updateItem(userId, itemId, ItemDtoMapper.itemDtoToItem(itemDto));
     }
 
     @GetMapping("/{itemId}")
     public Optional<ItemDto> getItemById(@PathVariable final Long itemId) {
         log.info("Controller layer: request for getting of item with id: '{}' obtained.", itemId);
 
-        return itemDtoMapper.itemToItemDto(itemService.getItemById(itemId));
+        return itemService.getItemById(itemId);
     }
 
     @GetMapping
     public Optional<List<ItemDto>> getAllItemsOfOwner(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Controller layer: request for getting of all items of owner with id: '{}' obtained.", userId);
 
-        return itemDtoMapper.itemsToDtos(itemService.getAllItemsOfOwner(userId));
+        return itemService.getAllItemsOfOwner(userId);
     }
 
     @GetMapping("/search")
     public Optional<List<ItemDto>> getItemsByNameOrDescription(@RequestParam String text) {
         log.info("Controller layer: request for search items by name or description obtained.");
 
-        return itemDtoMapper.itemsToDtos(itemService.getItemsByNameOrDescription(text));
+        return itemService.getItemsByNameOrDescription(text);
     }
 }

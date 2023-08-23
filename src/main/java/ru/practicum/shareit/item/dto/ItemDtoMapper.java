@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Component
 @NoArgsConstructor
 public class ItemDtoMapper {
-    public Optional<ItemDto> itemToItemDto(Item item) {
+    public static Optional<ItemDto> itemToItemDto(Item item) {
         if (item == null) {
             return Optional.empty();
         } else {
@@ -19,24 +19,24 @@ public class ItemDtoMapper {
         }
     }
 
-    public Item itemDtoToItem(ItemDto itemDto) {
+    public static Item itemDtoToItem(ItemDto itemDto) {
 
         return new Item(itemDto.getId(), itemDto.getName(), itemDto.getDescription(), itemDto.getAvailable(),
                 0L, 0L);
     }
 
-    public Optional<List<ItemDto>> itemsToDtos(List<Item> items) {
+    public static Optional<List<ItemDto>> itemsToDtos(List<Item> items) {
         if (items == null) {
             return Optional.empty();
         } else {
             return Optional.of(items
                     .stream()
-                    .map(this::convertItemToItemDto)
+                    .map(ItemDtoMapper::convertItemToItemDto)
                     .collect(Collectors.toList()));
         }
     }
 
-    public ItemDto convertItemToItemDto(Item item) {
+    public static ItemDto convertItemToItemDto(Item item) {
 
         return new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getAvailable());
     }
